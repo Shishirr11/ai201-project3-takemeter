@@ -1,167 +1,100 @@
-# TakeMeter Planning Document
+## 📌 1. Project Goal
 
-## Community
+The goal of this project is to build a text classification system that categorizes Reddit-style physics posts into meaningful intent-based labels. The system should distinguish between conceptual understanding, problem-solving behavior, interpretation of physics ideas, and emotional reactions.
 
-For this project, I chose the Reddit r/AskPhysics community. I selected this community because it contains a wide variety of physics discussions, including conceptual explanations, problem-solving questions, theoretical interpretations, and curiosity-driven reactions. These discussions are text-heavy and naturally structured in different ways, making them ideal for classification.
+The final objective is to evaluate how well a machine learning model can capture intent in scientific text, not just keywords.
 
-Unlike general science communities, r/AskPhysics has clear distinctions between educational explanations, mathematical problem-solving, deeper analytical discussions, and emotional curiosity posts. These differences create meaningful categories that reflect how people engage with physics.
+## 🏷️ 2. Label Definitions
 
----
+**Concept Explanation**
+Posts that explain or define physics laws, formulas, or principles in a structured way.
+Example: *Newton's second law states that force equals mass times acceleration.*
 
-## Labels
+**Problem Solving**
+Posts involving numerical computation, equations, or step-by-step problem solving.
+Example: *A 5kg object is pushed with 20N force. Find acceleration.*
 
-### 1. Concept Explanation
-A Concept Explanation is a post or comment that explains a physics law, principle, or phenomenon in an educational way.
+**Interpretation**
+Posts discussing meaning, implications, or philosophical interpretation of physics concepts.
+Example: *Does relativity imply that time is not absolute across observers?*
 
-Examples:
-- “Entropy measures the number of microstates available to a system.”
-- “Electric fields point in the direction a positive test charge would move.”
+**Reaction/Curiosity**
+Posts expressing emotional reaction, curiosity, confusion, or fascination without structured reasoning.
+Example: *Black holes are honestly mind blowing.*
 
----
+## 📊 3. Dataset Plan
 
-### 2. Problem Solving
-A Problem Solving post focuses on calculating, deriving, or solving a physics problem.
+- Target size: ~200+ samples
+- Source style: Reddit-like physics discussions
+- Format: CSV with columns:
+  - `text`
+  - `label`
+  - `notes` (optional)
 
-Examples:
-- “A car accelerates at 2 m/s² for 5 seconds. Find final velocity.”
-- “Find the equivalent resistance in this circuit.”
+**Key Design Choice:**
+Posts are intentionally written in long-form natural language to simulate real-world noisy data rather than clean textbook sentences.
 
----
+## ⚠️ 4. Hard Cases Strategy
 
-### 3. Interpretation / Analysis
-An Interpretation post discusses the meaning, implications, or reasoning behind physical laws or experimental results.
+Some samples are intentionally ambiguous to simulate real-world classification challenges.
 
-Examples:
-- “Does quantum superposition imply particles exist in multiple states simultaneously?”
-- “Why does energy conservation still hold in relativistic systems?”
+Examples of ambiguity:
+- Concept Explanation vs Interpretation
+- Problem Solving vs Concept Explanation
 
----
+These are labeled carefully and documented in the `notes` column.
+At least 2–3 hard cases are explicitly tracked.
 
-### 4. Reaction / Curiosity
-A Reaction post expresses fascination, confusion, or curiosity without structured explanation or problem-solving.
+## ⚖️ 5. Labeling Rules
 
-Examples:
-- “Black holes bending time is wild.”
-- “Quantum entanglement feels impossible to understand.”
+- Each example must have exactly one label
+- Labels must match exactly (case-sensitive)
+- If a post contains mixed intent:
+  - choose dominant intent
+  - document ambiguity in `notes`
 
----
+## 🧪 6. Evaluation Plan
 
-## Hard Edge Cases
+The model will be evaluated using:
 
-The hardest edge case in this dataset will be distinguishing between Concept Explanation and Interpretation.
+**Metrics:**
+- Accuracy
+- Precision / Recall / F1-score
+- Confusion Matrix
 
-Hard Case 1:
-Text: "Does relativity mean time is not absolute?"
-Possible labels: Concept Explanation / Interpretation
-Decision: Interpretation
-Reason: Focus is on implication, not teaching the theory.
+**Baseline:**
+- Zero-shot classification using Groq LLM
 
-Hard Case 2:
-Text: "Entropy increases because systems move toward higher probability states."
-Possible labels: Concept Explanation / Interpretation
-Decision: Concept Explanation
-Reason: Direct explanation of a physical principle.
+**Fine-tuned Model:**
+- DistilBERT fine-tuned on labeled dataset
 
-Hard Case 3:
-Text: "Quantum mechanics makes no sense to me."
-Possible labels: Reaction / Interpretation
-Decision: Reaction
-Reason: Emotional confusion, no analytical structure.
+## 🤖 7. AI Usage Plan
 
-### Decision Rule:
-I will classify based on primary intent:
+AI tools are used for:
+- Assisting with dataset diversity and realism
+- Helping design classification prompts
+- Identifying patterns in misclassified predictions
 
-- If the post mainly teaches or explains a concept → Concept Explanation
-- If the post mainly discusses implications or meaning → Interpretation
+All AI-generated outputs are manually reviewed and corrected before use.
 
-This rule will improve consistency during annotation.
+## 🔍 8. Expected Challenges
 
----
+- Overlap between Concept Explanation and Interpretation
+- Short posts lacking structural signals
+- Emotional language influencing classification
+- Ambiguous scientific phrasing
 
-## Data Collection Plan
+## 📈 9. Success Criteria
 
-I will collect at least 200 public posts/comments from Reddit r/AskPhysics.
+The project is considered successful if:
+- Fine-tuned model significantly outperforms baseline
+- Confusion matrix shows clear structure
+- Error cases are explainable and consistent
+- Model demonstrates understanding of intent beyond keywords
 
-Target distribution:
+## 🧠 10. Key Insight (Design Philosophy)
 
-- Concept Explanation: 50
-- Problem Solving: 50
-- Interpretation: 50
-- Reaction/Curiosity: 50
+This project focuses on intent classification in scientific discourse, not factual physics understanding.
 
-This balanced distribution will reduce class imbalance.
-
-If one label is underrepresented after 200 examples, I will search using keywords like:
-
-- “why”
-- “explain”
-- “calculate”
-- “derive”
-- “mind blowing”
-
-Dataset format:
-
-- text
-- label
-- notes
-
----
-
-## Evaluation Metrics
-
-### Accuracy
-Measures the overall percentage of correct predictions.
-
-### Precision
-Important because I want predictions for technical labels like Problem Solving to be reliable.
-
-### Recall
-Important because short reaction posts may be harder to detect.
-
-### F1 Score
-Balances precision and recall for each class.
-
-### Confusion Matrix
-Helps identify common mistakes such as confusing Concept Explanation with Interpretation.
-
-Accuracy alone is not enough because it does not show per-class weaknesses.
-
----
-
-## Definition of Success
-
-I will consider this classifier successful if:
-
-- Overall accuracy ≥ 78%
-- Each class has F1 ≥ 0.70
-- Fine-tuned model outperforms Groq baseline by at least 10%
-- Confusion matrix shows clear separation between Problem Solving and Concept Explanation
-
-For deployment, the model should consistently classify educational vs analytical posts with high reliability.
-
----
-
-## AI Tool Plan
-
-### Label Stress Testing
-I will use ChatGPT to generate 5–10 ambiguous physics posts between labels such as Concept Explanation vs Interpretation and Problem Solving vs Concept Explanation.
-
-This will help refine label definitions before annotation.
-
----
-
-### Annotation Assistance
-I may use ChatGPT to pre-label a small batch of physics posts before manually reviewing them.
-
-If used, I will mark them in the notes column and disclose them in README.
-
----
-
-### Failure Analysis
-After training, I will provide incorrect predictions to ChatGPT and ask it to identify patterns such as:
-
-- short-text confusion
-- conceptual ambiguity
-- overlap between explanation and interpretation
-
-I will verify all identified patterns manually.
+The key question is:
+*Can a model distinguish between explaining physics, solving physics, interpreting physics, and reacting emotionally to physics?*
