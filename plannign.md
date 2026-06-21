@@ -50,13 +50,23 @@ Examples:
 
 The hardest edge case in this dataset will be distinguishing between Concept Explanation and Interpretation.
 
-Example:
-“Time dilation shows that time itself depends on motion.”
+Hard Case 1:
+Text: "Does relativity mean time is not absolute?"
+Possible labels: Concept Explanation / Interpretation
+Decision: Interpretation
+Reason: Focus is on implication, not teaching the theory.
 
-This could be:
+Hard Case 2:
+Text: "Entropy increases because systems move toward higher probability states."
+Possible labels: Concept Explanation / Interpretation
+Decision: Concept Explanation
+Reason: Direct explanation of a physical principle.
 
-- Concept Explanation because it describes relativity.
-- Interpretation because it discusses the implication of relativity.
+Hard Case 3:
+Text: "Quantum mechanics makes no sense to me."
+Possible labels: Reaction / Interpretation
+Decision: Reaction
+Reason: Emotional confusion, no analytical structure.
 
 ### Decision Rule:
 I will classify based on primary intent:
