@@ -92,7 +92,6 @@ But struggles with:
 
 ## 🤖 AI Usage
 
-- Used AI to generate Reddit-style physics dataset
 - Used AI to design classification prompts for Groq
 - Used AI to analyze misclassified examples and identify patterns
 - Manually verified and corrected dataset and labels
